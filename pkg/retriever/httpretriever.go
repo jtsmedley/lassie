@@ -124,6 +124,9 @@ func (ph *ProtocolHttp) Retrieve(
 		Selector:           retrieval.request.GetSelector(),
 		ExpectDuplicatesIn: true,
 		MaxBlocks:          retrieval.request.MaxBlocks,
+		OnRemoteBytesRead: func(read uint64) {
+			shared.sendEvent(events.DataReceived(retrieval.Clock.Now(), retrieval.request.RetrievalID, candidate, multicodec.TransportIpfsGatewayHttp, read))
+		},
 	}
 
 	blockCount, byteCount, err := cfg.VerifyCar(ctx, rdr, retrieval.request.LinkSystem)

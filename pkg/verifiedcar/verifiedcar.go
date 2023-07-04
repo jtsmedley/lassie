@@ -53,6 +53,7 @@ type Config struct {
 	ExpectDuplicatesIn bool           // Handles whether the incoming stream has duplicates
 	WriteDuplicatesOut bool           // Handles whether duplicates should be written a second time as blocks
 	MaxBlocks          uint64         // set a budget for the traversal
+	OnRemoteBytesRead  func(uint64)   // a callback whenever bytes are read from the stream
 }
 
 func visitNoop(p traversal.Progress, n datamodel.Node, r traversal.VisitReason) error { return nil }
@@ -178,6 +179,9 @@ func NewNextBlockLinkSystem(
 				if err != nil {
 					return nil, err
 				}
+				if cfg.OnRemoteBytesRead != nil {
+					cfg.OnRemoteBytesRead(uint64(len(data)))
+				}
 				if !cfg.WriteDuplicatesOut {
 					return bytes.NewReader(data), nil
 				}
@@ -197,6 +201,9 @@ func NewNextBlockLinkSystem(
 			data, err = cr.readNextBlock(ctx, cid)
 			if err != nil {
 				return nil, err
+			}
+			if cfg.OnRemoteBytesRead != nil {
+				cfg.OnRemoteBytesRead(uint64(len(data)))
 			}
 		}
 		bt.recordBlock(data)
