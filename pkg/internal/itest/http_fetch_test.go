@@ -1143,7 +1143,7 @@ func TestHttpFetch(t *testing.T) {
 					req.Equal("public, max-age=29030400, immutable", resp.Header.Get("Cache-Control"))
 					ct := resp.Header.Get("Content-Type")
 					// TODO: check the noDups() case and assert accordingly
-					req.Equal("application/vnd.ipld.car; version=1; order=dfs; dups=", ct[:len(ct)-1]) // strip off y|n from the end
+					req.Equal("application/vnd.ipld.car;version=1;order=dfs;dups=", ct[:len(ct)-1]) // strip off y|n from the end
 					req.Equal("nosniff", resp.Header.Get("X-Content-Type-Options"))
 					etagStart := fmt.Sprintf(`"%s.car.`, srcData[i].Root.String())
 					etagGot := resp.Header.Get("ETag")
